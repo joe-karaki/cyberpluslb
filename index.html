@@ -2,46 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CYBER+ | Premium Electronics Store</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER+ | Premium Electronics Store</title>
 
-    <!--  CDN links  -->
+    <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <!-- Inter font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root{--primary:#3b82f6;--primary-dark:#2563eb;--secondary:#10b981;--accent:#f59e0b;--dark:#1f2937;--darker:#111827;--light:#f3f4f6;--gray:#6b7280;--success:#10b981;--warning:#f59e0b;--error:#ef4444;}
-        *{font-family:'Inter',system-ui,-apple-system,sans-serif;}
-        body{background:linear-gradient(135deg,var(--darker) 0%,var(--dark) 100%);color:var(--light);line-height:1.6;}
-        .glass-effect{background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);}
-        .card{background:rgba(31,41,55,.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);transition:all .3s ease;}
-        .card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,.3);border-color:rgba(59,130,246,.3);}
-        .btn-primary{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:white;transition:all .3s;box-shadow:0 4px 15px rgba(59,130,246,.25);}
-        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,.35);}
-        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:1000;opacity:0;transition:opacity .3s;}
-        .modal.active{display:flex;opacity:1;}
-        .sidebar{position:fixed;top:0;right:-450px;width:450px;height:100%;background:var(--dark);transition:right .4s cubic-bezier(.4,0,.2,1);z-index:1000;overflow-y:auto;border-left:1px solid rgba(255,255,255,.1);}
-        .sidebar.active{right:0;}
-        .admin-panel{position:fixed;top:0;left:-100%;width:100%;height:100%;background:var(--darker);transition:left .4s cubic-bezier(.4,0,.2,1);z-index:1001;display:none;}
-        .admin-panel.active{left:0;display:block;}
-        .checkout-container{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--darker);z-index:1002;overflow-y:auto;transform:translateX(100%);transition:transform .5s cubic-bezier(.4,0,.2,1);}
-        .checkout-container.active{transform:translateX(0);}
-        .form-control{width:100%;padding:.875rem 1rem;background:rgba(31,41,55,.8);border:1px solid rgba(107,114,128,.3);border-radius:12px;color:white;transition:all .3s;}
-        .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.1);background:rgba(31,41,55,1);}
-        .color-swatch{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.3);cursor:pointer;margin:2px;display:inline-block;transition:all .3s;}
-        .color-swatch.selected{border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.3);transform:scale(1.1);}
-        .notification{position:fixed;top:20px;right:20px;padding:1rem 1.5rem;border-radius:12px;color:white;font-weight:500;z-index:9999;transform:translateX(400px);transition:transform .3s;}
-        .notification.show{transform:translateX(0);}
-        .notification.success{background:linear-gradient(135deg,#10b981 0%,#059669 100%);}
-        .notification.error{background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%);}
-        .stats-card{background:linear-gradient(135deg,rgba(59,130,246,.1) 0%,rgba(16,185,129,.1) 100%);border:1px solid rgba(255,255,255,.1);}
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f3f4f6;
+            --gray: #6b7280;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+        * { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body { background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%); color: var(--light); line-height: 1.6; }
+        .glass-effect { background: rgba(255,255,255,.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.1); }
+        .card { background: rgba(31,41,55,.8); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,.1); transition: all .3s ease; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,.3); border-color: rgba(59,130,246,.3); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color:white; transition:all .3s; box-shadow:0 4px 15px rgba(59,130,246,.25); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(59,130,246,.35); }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; z-index:1000; opacity:0; transition:opacity .3s; }
+        .modal.active { display:flex; opacity:1; }
+        .sidebar { position:fixed; top:0; right:-450px; width:450px; height:100%; background:var(--dark); transition:right .4s cubic-bezier(.4,0,.2,1); z-index:1000; overflow-y:auto; border-left:1px solid rgba(255,255,255,.1); }
+        .sidebar.active { right:0; }
+        .admin-panel { position:fixed; top:0; left:-100%; width:100%; height:100%; background:var(--darker); transition:left .4s cubic-bezier(.4,0,.2,1); z-index:1001; display:none; }
+        .admin-panel.active { left:0; display:block; }
+        .checkout-container { position:fixed; top:0; left:0; width:100%; height:100%; background:var(--darker); z-index:1002; overflow-y:auto; transform:translateX(100%); transition:transform .5s cubic-bezier(.4,0,.2,1); }
+        .checkout-container.active { transform:translateX(0); }
+        .form-control { width:100%; padding:.875rem 1rem; background:rgba(31,41,55,.8); border:1px solid rgba(107,114,128,.3); border-radius:12px; color:white; transition:all .3s; }
+        .form-control:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(59,130,246,.1); background:rgba(31,41,55,1); }
+        .color-swatch { width:24px; height:24px; border-radius:50%; border:2px solid rgba(255,255,255,.3); cursor:pointer; margin:2px; display:inline-block; transition:all .3s; }
+        .color-swatch.selected { border-color:var(--primary); box-shadow:0 0 0 3px rgba(59,130,246,.3); transform:scale(1.1); }
+        .notification { position:fixed; top:20px; right:20px; padding:1rem 1.5rem; border-radius:12px; color:white; font-weight:500; z-index:9999; transform:translateX(400px); transition:transform .3s; }
+        .notification.show { transform:translateX(0); }
+        .notification.success { background:linear-gradient(135deg,#10b981 0%,#059669 100%); }
+        .notification.error { background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%); }
+        .stats-card { background:linear-gradient(135deg,rgba(59,130,246,.1) 0%,rgba(16,185,129,.1) 100%); border:1px solid rgba(255,255,255,.1); }
     </style>
 </head>
 <body>
 
-<!-- ================= HEADER ================= -->
+<!-- HEADER -->
 <header class="sticky top-0 glass-effect shadow-lg z-40 border-b border-gray-700">
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
         <div class="flex items-center space-x-3">
@@ -50,7 +65,7 @@
         </div>
 
         <div class="hidden md:flex flex-1 mx-10 relative">
-            <input id="search-input" type="text" placeholder="Search for electronics..." class="w-full px-6 py-3 pl-12 rounded-full glass-effect border border-gray-600 text-white placeholder-gray-400">
+            <input id="search-input" type="text" placeholder="Search for electronics..." class="w-full px-6 py-3 pl-12 rounded-full glass-effect border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400">
             <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             <div id="search-suggestions" class="search-suggestions hidden"></div>
         </div>
@@ -79,7 +94,7 @@
     </div>
 </header>
 
-<!-- ================= HERO ================= -->
+<!-- HERO -->
 <section class="bg-gradient-to-r from-indigo-600 to-purple-600 py-20 text-white">
     <div class="container mx-auto px-4 text-center">
         <h1 class="text-5xl md:text-6xl font-bold mb-6">Welcome to <span class="text-yellow-300">CYBER+</span></h1>
@@ -91,7 +106,7 @@
     </div>
 </section>
 
-<!-- ================= FEATURES ================= -->
+<!-- FEATURES -->
 <section id="features" class="py-20 bg-custom-dark">
     <div class="container mx-auto px-4">
         <h2 class="text-4xl font-bold mb-4 text-center">Why Choose CYBER+?</h2>
@@ -105,7 +120,7 @@
     </div>
 </section>
 
-<!-- ================= PRODUCTS ================= -->
+<!-- PRODUCTS -->
 <section id="products" class="py-20 bg-custom-darker">
     <div class="container mx-auto px-4">
         <h2 class="text-4xl font-bold mb-4 text-center">Our Premium Products</h2>
@@ -121,7 +136,7 @@
     </div>
 </section>
 
-<!-- ================= CONTACT ================= -->
+<!-- CONTACT -->
 <section id="contact" class="py-20 bg-custom-dark">
     <div class="container mx-auto px-4">
         <h2 class="text-4xl font-bold mb-4 text-center">Get in Touch</h2>
@@ -133,7 +148,7 @@
     </div>
 </section>
 
-<!-- ================= FOOTER ================= -->
+<!-- FOOTER -->
 <footer class="bg-custom-darker py-12 border-t border-gray-800">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -153,13 +168,15 @@
     </div>
 </footer>
 
-<!-- ================= MODALS / SIDEBARS ================= -->
+<!-- SIDE / MODAL WINDOWS -->
 <div class="sidebar" id="cart-sidebar">
     <div class="p-6 border-b border-gray-700 flex justify-between items-center">
         <h3 class="text-2xl font-bold flex items-center"><i class="fas fa-shopping-cart mr-3 text-blue-500"></i>Shopping Cart</h3>
         <button id="close-cart" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
     </div>
-    <div id="cart-items" class="flex-grow overflow-auto p-6"></div>
+    <div id="cart-items" class="flex-grow overflow-auto p-6">
+        <div class="text-center text-gray-400 py-20"><i class="fas fa-shopping-cart text-6xl mb-4 opacity-50"></i><p class="text-lg">Your cart is empty</p></div>
+    </div>
     <div class="p-6 border-t border-gray-700">
         <div class="flex justify-between text-lg"><span>Subtotal:</span><span id="cart-subtotal">$0.00</span></div>
         <div class="flex justify-between text-sm text-gray-400"><span>Shipping:</span><span id="cart-shipping">$12.99</span></div>
@@ -173,7 +190,7 @@
     <div class="modal-content max-w-4xl">
         <div class="flex justify-between items-start mb-6"><h3 id="modal-product-name" class="text-3xl font-bold"></h3><button id="close-modal" class="text-gray-400 hover:text-white"><i class="fas fa-times text-2xl"></i></button></div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div id="modal-product-image" class="glass-effect p-8 rounded-2xl flex items-center justify-center" style="min-height:400px;"></div>
+            <div id="modal-product-image" class="glass-effect p-8 rounded-2xl flex items-center justify-center" style="min-height:400px;"><i class="fas fa-laptop text-8xl text-blue-500"></i></div>
             <div class="space-y-6">
                 <div><div id="modal-product-price" class="text-3xl font-bold text-blue-500 mb-2"></div><div class="flex items-center text-yellow-500"><div id="modal-product-rating" class="flex"></div><span class="ml-2 text-gray-400">(<span id="modal-product-reviews">0</span> reviews)</span></div></div>
                 <p id="modal-product-description" class="text-gray-300 text-lg"></p>
@@ -188,7 +205,7 @@
     </div>
 </div>
 
-<!-- LOGIN / REGISTER / ADMIN LOGIN -->
+<!-- LOGIN / REGISTER / ADMIN LOGIN MODALS -->
 <div class="modal" id="login-modal"><div class="modal-content max-w-md"><div class="text-center mb-6"><h3 class="text-2xl font-bold">Welcome Back</h3><p class="text-gray-400">Sign in to your account</p></div>
     <form id="login-form" class="space-y-4"><input id="login-email" type="email" placeholder="Email" class="form-control" required><input id="login-password" type="password" placeholder="Password" class="form-control" required>
         <div class="flex gap-4"><button type="submit" class="btn-primary flex-1 py-2 rounded-xl">Sign In</button><button type="button" id="close-login" class="glass-effect px-4 py-2 rounded-xl">Cancel</button></div>
@@ -275,10 +292,10 @@
 
 <!-- ================= JAVASCRIPT ================= -->
 <script>
-/* ===== GLOBALS ===== */
+/* === GLOBALS === */
 let products = [], cart = [], currentUser = null, isAdmin = false, editingProductId = null, currentProduct = null, selectedColor = null, colorFieldCount = 1;
 
-/* ===== STORAGE ===== */
+/* === STORAGE === */
 const loadProducts = () => { const s = localStorage.getItem('techhubpro_products'); products = s ? JSON.parse(s) : defaultProducts(); saveProducts(); };
 const saveProducts = () => localStorage.setItem('techhubpro_products', JSON.stringify(products));
 const loadCart = () => { const s = localStorage.getItem('techhubpro_cart'); cart = s ? JSON.parse(s) : []; updateCartDisplay(); };
@@ -286,7 +303,7 @@ const saveCart = () => localStorage.setItem('techhubpro_cart', JSON.stringify(ca
 const loadUser = () => { const s = localStorage.getItem('techhubpro_user'); if (s) { currentUser = JSON.parse(s); updateUserMenu(); } };
 const saveUser = () => localStorage.setItem('techhubpro_user', JSON.stringify(currentUser));
 
-/* ===== DEFAULT PRODUCTS ===== */
+/* === DEFAULT PRODUCTS === */
 function defaultProducts() { return [
     { id: 1, name: "MacBook Pro 16-inch", price: 2499.99, category: "computers", description: "M2 Pro chip, 16 GB RAM, 512 GB SSD.", stock: 15, image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500", colors: [{name:"Space Gray",code:"#8E8E93",price:2499.99},{name:"Silver",code:"#E5E5EA",price:2499.99}], rating: 4.8, reviews: 124, features:["M2 Pro Chip","16GB RAM","512GB SSD","16-inch Retina"] },
     { id: 2, name: "iPhone 15 Pro Max", price: 1199.99, category: "smartphones", description: "A17 Pro chip, titanium design.", stock: 28, image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500", colors: [{name:"Natural Titanium",code:"#F5F5DC",price:1199.99},{name:"Blue Titanium",code:"#4682B4",price:1199.99}], rating: 4.7, reviews: 89, features:["A17 Pro","Pro Camera","Action Button"] },
@@ -298,7 +315,7 @@ function defaultProducts() { return [
     { id: 8, name: "Wireless Earbuds Pro", price: 249.99, category: "audio", description: "Active noise cancelling earbuds.", stock: 76, image: "https://images.unsplash.com/photo-1590658165737-15a047b67cf3?w=500", colors: [{name:"White",code:"#FFFFFF",price:249.99},{name:"Black",code:"#000000",price:249.99}], rating: 4.5, reviews: 134, features:["ANC","Spatial Audio","6-hour Battery"] }
 ]; }
 
-/* ===== UI ===== */
+/* === UI === */
 function displayProducts(filterCategory='all') {
     const grid = document.getElementById('products-grid');
     grid.innerHTML = '';
@@ -333,7 +350,7 @@ function generateStars(rating) {
     return html;
 }
 
-/* ===== CART ===== */
+/* === CART === */
 function addToCart(productId, qty = 1, color = null) {
     const p = products.find(pr => pr.id === productId);
     if (!p || p.stock < qty) return showNotification('Insufficient stock', 'error');
@@ -369,7 +386,7 @@ function updateCartDisplay() {
     document.getElementById('cart-total') && (document.getElementById('cart-total').textContent = '$' + total.toFixed(2));
 }
 
-/* ===== USER / ADMIN ===== */
+/* === USER / ADMIN === */
 function updateUserMenu() {
     const guest = document.getElementById('guest-menu'), user = document.getElementById('user-menu'), admin = document.getElementById('admin-menu');
     guest.classList.toggle('hidden', !!currentUser || isAdmin);
@@ -390,8 +407,8 @@ function displayAdminProducts() {
                 <div><h4 class="font-semibold text-white">${p.name}</h4><p class="text-sm text-gray-400">$${p.price.toFixed(2)} • Stock: ${p.stock} • Category: ${p.category}</p></div>
             </div>
             <div class="flex gap-2">
-                <button class="edit-product-btn text-blue-400 hover:text-blue-300 p-2 glass-effect rounded-lg" data-id="${p.id}"><i class="fas fa-edit" data-id="${p.id}"></i></button>
-                <button class="delete-product-btn text-red-400 hover:text-red-300 p-2 glass-effect rounded-lg" data-id="${p.id}"><i class="fas fa-trash" data-id="${p.id}"></i></button>
+                <button class="edit-product-btn text-blue-400 hover:text-blue-300 p-2 glass-effect rounded-lg" data-id="${p.id}"><i class="fas fa-edit"></i></button>
+                <button class="delete-product-btn text-red-400 hover:text-red-300 p-2 glass-effect rounded-lg" data-id="${p.id}"><i class="fas fa-trash"></i></button>
             </div>
         </div>`).join('');
 }
@@ -416,7 +433,7 @@ function initSalesChart() {
     window.salesChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Daily Revenue', data, borderColor: '#3b82f6', fill: false, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: 'white' } } }, scales: { y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,.1)'} }, x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,.1)'} } } } });
 }
 
-/* ===== FORM UTILS ===== */
+/* === FORM UTILS === */
 function addColorField() {
     const section = document.getElementById('colors-section'); const div = document.createElement('div'); div.className = 'flex gap-2 mb-2';
     div.innerHTML = `<input type="text" placeholder="Color name" class="form-control flex-1" id="color-name-${colorFieldCount}"><input type="color" class="w-12 h-12 rounded" id="color-code-${colorFieldCount}"><input type="number" step="0.01" placeholder="Price" class="form-control w-24" id="color-price-${colorFieldCount}"><button type="button" onclick="removeColorField(this)" class="bg-red-500 text-white px-3 py-2 rounded">-</button>`;
@@ -424,7 +441,7 @@ function addColorField() {
 }
 function removeColorField(btn) { btn.parentElement.remove(); }
 
-/* ===== EVENTS ===== */
+/* === EVENTS === */
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts(); loadCart(); loadUser(); displayProducts(); updateCartDisplay(); updateAdminStats();
     /* header buttons */
@@ -454,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.closest('.delete-product-btn')) { const id = Number(e.target.closest('.delete-product-btn').dataset.id); if (confirm('Delete this product?')) { products = products.filter(p => p.id !== id); saveProducts(); displayProducts(); displayAdminProducts(); updateAdminStats(); } }
         if (e.target.closest('.edit-product-btn')) populateEditForm(Number(e.target.closest('.edit-product-btn').dataset.id));
     });
-    document.getElementById('save-product-btn').replaceWith(document.getElementById('save-product-btn').cloneNode(true));
+    document.getElementById('save-product-btn').replaceWith(document.getElementById('save-product-btn').cloneNode(true)); // detach old
     document.getElementById('save-product-btn').addEventListener('click', saveProductHandler);
     document.getElementById('login-form')?.addEventListener('submit', e => { e.preventDefault(); currentUser = { email: document.getElementById('login-email').value, name: document.getElementById('login-email').value.split('@')[0] }; saveUser(); updateUserMenu(); document.getElementById('login-modal').classList.remove('active'); showNotification('Logged in', 'success'); });
     document.getElementById('register-form')?.addEventListener('submit', e => { e.preventDefault(); currentUser = { name: document.getElementById('register-name').value, email: document.getElementById('register-email').value }; saveUser(); updateUserMenu(); document.getElementById('register-modal').classList.remove('active'); showNotification('Account created', 'success'); });
@@ -466,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('increase-quantity')?.addEventListener('click', () => { const v = document.getElementById('product-quantity'); const max = currentProduct ? currentProduct.stock : 1; if (parseInt(v.value) < max) v.value++; });
 });
 
-/* ===== PRODUCT MODAL ===== */
+/* === PRODUCT MODAL === */
 let currentProduct = null, selectedColor = null;
 function openProductModal(id) {
     currentProduct = products.find(p => p.id === id);
@@ -496,7 +513,7 @@ document.addEventListener('click', e => {
     }
 });
 
-/* ===== ADMIN EDIT ===== */
+/* === ADMIN EDIT === */
 function populateEditForm(id) {
     const p = products.find(pr => pr.id === id); if (!p) return;
     editingProductId = id;
@@ -513,7 +530,7 @@ function populateEditForm(id) {
     document.getElementById('add-product-form').style.display = 'block';
 }
 
-/* ===== SAVE / PLACE ORDER ===== */
+/* === SAVE / PLACE ORDER === */
 function saveProductHandler() {
     const name = document.getElementById('product-name').value.trim();
     const price = parseFloat(document.getElementById('product-price').value);
@@ -559,7 +576,7 @@ function placeOrderHandler() {
     showNotification(`Order #${order.id} placed successfully!`, 'success');
 }
 
-/* ===== UTILS ===== */
+/* === UTILS === */
 function showNotification(msg, type = 'success') {
     const n = document.createElement('div'); n.className = `notification ${type}`; n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>${msg}`;
     document.body.appendChild(n); setTimeout(() => n.classList.add('show'), 100);
