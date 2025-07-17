@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBER+ | Premium Electronics Store</title>
+
+    <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <!-- Inter font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
             --primary: #3b82f6;
@@ -22,466 +28,105 @@
             --warning: #f59e0b;
             --error: #ef4444;
         }
-
         * { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
         body { background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%); color: var(--light); line-height: 1.6; }
-
-        .bg-custom-dark { background-color: var(--dark); }
-        .bg-custom-darker { background-color: var(--darker); }
-        .text-custom-primary { color: var(--primary); }
-        .text-custom-secondary { color: var(--secondary); }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white; transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.35); }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
-            color: white; transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
-        }
-        .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35); }
-
-        .card {
-            background: rgba(31, 41, 55, 0.8); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 1000; opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal.active { display: flex; opacity: 1; }
-
-        .modal-content {
-            background: var(--dark); border-radius: 20px; padding: 2rem;
-            max-width: 90%; max-height: 90%; overflow-y: auto;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar {
-            position: fixed; top: 0; right: -450px; width: 450px; height: 100%;
-            background: var(--dark); transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000; overflow-y: auto; border-left: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
-        }
-        .sidebar.active { right: 0; }
-
-        .admin-panel {
-            position: fixed; top: 0; left: -100%; width: 100%; height: 100%;
-            background: var(--darker); transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1001; overflow-y: auto; display: none;
-        }
-        .admin-panel.active { left: 0; display: block; }
-
-        .color-swatch {
-            width: 24px; height: 24px; border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3); cursor: pointer; margin: 2px;
-            display: inline-block; transition: all 0.3s ease;
-        }
-        .color-swatch.selected {
-            border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); transform: scale(1.1);
-        }
-        .color-swatch:hover { transform: scale(1.05); }
-
-        .checkout-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--darker); z-index: 1002; overflow-y: auto;
-            transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .checkout-container.active { transform: translateX(0); }
-
-        .form-control {
-            width: 100%; padding: 0.875rem 1rem; background: rgba(31, 41, 55, 0.8);
-            border: 1px solid rgba(107, 114, 128, 0.3); border-radius: 12px; color: white;
-            transition: all 0.3s ease;
-        }
-        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); background: rgba(31, 41, 55, 1); }
-
-        .rating { color: var(--accent); }
-        .badge {
-            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.05em;
-        }
-        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .badge-error { background: rgba(239, 68, 68, 0.2); color: var(--error); }
-
-        .notification {
-            position: fixed; top: 20px; right: 20px; padding: 1rem 1.5rem; border-radius: 12px;
-            color: white; font-weight: 500; z-index: 9999; transform: translateX(400px);
-            transition: transform 0.3s ease; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-        .notification.show { transform: translateX(0); }
-        .notification.success { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); }
-        .notification.error { background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%); }
-
-        .hero-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .feature-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .feature-card:hover {
-            background: rgba(255, 255, 255, 0.05); transform: translateY(-4px);
-        }
-
-        .search-suggestions {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: var(--dark); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; margin-top: 4px; z-index: 100;
-            max-height: 200px; overflow-y: auto;
-        }
-
-        .chart-container { height: 300px; margin: 1rem 0; }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--darker); }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--primary), var(--primary-dark)); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
-
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .animate-pulse { animation: pulse 2s infinite; }
-
-        .loading-spinner {
-            border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%;
-            border-top: 2px solid var(--primary); width: 20px; height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .product-image { aspect-ratio: 1; object-fit: cover; transition: transform 0.3s ease; }
-        .product-image:hover { transform: scale(1.05); }
-
-        .filter-tag {
-            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--primary); padding: 0.5rem 1rem; border-radius: 20px;
-            cursor: pointer; transition: all 0.3s ease;
-        }
-        .filter-tag.active, .filter-tag:hover { background: var(--primary); color: white; }
-
-        .stats-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* line-clamp fallback */
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .glass-effect { background: rgba(255,255,255,.05); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,.1); }
+        .card { background: rgba(31,41,55,.8); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,.1); transition: all .3s ease; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,.3); border-color: rgba(59,130,246,.3); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color:white; transition:all .3s; box-shadow:0 4px 15px rgba(59,130,246,.25); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(59,130,246,.35); }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; z-index:1000; opacity:0; transition:opacity .3s; }
+        .modal.active { display:flex; opacity:1; }
+        .sidebar { position:fixed; top:0; right:-450px; width:450px; height:100%; background:var(--dark); transition:right .4s cubic-bezier(.4,0,.2,1); z-index:1000; overflow-y:auto; border-left:1px solid rgba(255,255,255,.1); }
+        .sidebar.active { right:0; }
+        .admin-panel { position:fixed; top:0; left:-100%; width:100%; height:100%; background:var(--darker); transition:left .4s cubic-bezier(.4,0,.2,1); z-index:1001; display:none; }
+        .admin-panel.active { left:0; display:block; }
+        .checkout-container { position:fixed; top:0; left:0; width:100%; height:100%; background:var(--darker); z-index:1002; overflow-y:auto; transform:translateX(100%); transition:transform .5s cubic-bezier(.4,0,.2,1); }
+        .checkout-container.active { transform:translateX(0); }
+        .form-control { width:100%; padding:.875rem 1rem; background:rgba(31,41,55,.8); border:1px solid rgba(107,114,128,.3); border-radius:12px; color:white; transition:all .3s; }
+        .form-control:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(59,130,246,.1); background:rgba(31,41,55,1); }
+        .color-swatch { width:24px; height:24px; border-radius:50%; border:2px solid rgba(255,255,255,.3); cursor:pointer; margin:2px; display:inline-block; transition:all .3s; }
+        .color-swatch.selected { border-color:var(--primary); box-shadow:0 0 0 3px rgba(59,130,246,.3); transform:scale(1.1); }
+        .notification { position:fixed; top:20px; right:20px; padding:1rem 1.5rem; border-radius:12px; color:white; font-weight:500; z-index:9999; transform:translateX(400px); transition:transform .3s; }
+        .notification.show { transform:translateX(0); }
+        .notification.success { background:linear-gradient(135deg,#10b981 0%,#059669 100%); }
+        .notification.error { background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%); }
+        .stats-card { background:linear-gradient(135deg,rgba(59,130,246,.1) 0%,rgba(16,185,129,.1) 100%); border:1px solid rgba(255,255,255,.1); }
     </style>
 </head>
 <body>
 
-<!-- ============  YOUR ORIGINAL MARKUP (unchanged)  ============ -->
-<!-- (Header, Hero, Features, Products, Contact, Footer, Sidebars, Modals, etc.) -->
-<!-- … paste the rest of your existing HTML here … -->
-<!-- =========================================================== -->
-
-<!-- ==========  MAIN SCRIPT  ==========  -->
-<script>
-/* =====  GLOBALS  ===== */
-let products = [];
-let cart = [];
-let currentUser = null;
-let isAdmin = false;
-let currentProduct = null;
-let selectedColor = null;
-let colorFieldCount = 1;
-let currentFilter = 'all';
-let salesChart = null;
-let editingProductId = null;   // NEW – tracks edit mode
-
-/* =====  INITIAL LOAD  ===== */
-document.addEventListener('DOMContentLoaded', () => {
-    loadProducts();
-    loadCart();
-    loadUser();
-    setupEventListeners();
-    displayProducts();
-    initializeSearchSuggestions();
-});
-
-/* =====  CRUD HELPERS  ===== */
-function loadProducts() {
-    const saved = localStorage.getItem('techhubpro_products');
-    products = saved ? JSON.parse(saved) : [
-        // default sample products
-        { id: 1, name: "MacBook Pro 16-inch", price: 2499.99, category: "computers", description: "...", stock: 15, image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500", colors: [{name:"Space Gray",code:"#8E8E93",price:2499.99},{name:"Silver",code:"#E5E5EA",price:2499.99}], rating:4.8, reviews:124, features:["M2 Pro Chip","16GB Unified Memory","512GB SSD","16-inch Liquid Retina XDR Display"] },
-        { id: 2, name: "iPhone 15 Pro Max", price: 1199.99, category: "smartphones", description: "...", stock: 28, image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500", colors: [{name:"Natural Titanium",code:"#F5F5DC",price:1199.99},{name:"Blue Titanium",code:"#4682B4",price:1199.99}], rating:4.7, reviews:89, features:["A17 Pro Chip","Pro Camera System","Action Button","USB-C","Titanium Design"] },
-        { id: 3, name: "Sony WH-1000XM5", price: 399.99, category: "audio", description: "...", stock: 42, image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500", colors: [{name:"Black",code:"#000000",price:399.99},{name:"Silver",code:"#C0C0C0",price:399.99}], rating:4.6, reviews:203, features:["Industry-leading noise canceling","30-hour battery","Quick Charge","Multipoint connection"] },
-        { id: 4, name: "Gaming Mechanical Keyboard", price: 159.99, category: "gaming", description: "...", stock: 67, image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=500", colors: [{name:"Black",code:"#000000",price:159.99},{name:"White",code:"#FFFFFF",price:169.99}], rating:4.5, reviews:156, features:["Cherry MX Blue Switches","RGB Backlighting","Programmable Keys","N-Key Rollover"] },
-        { id: 5, name: "4K Webcam", price: 199.99, category: "accessories", description: "...", stock: 33, image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500", colors: [], rating:4.4, reviews:78, features:["4K Resolution","Auto-focus","Noise Reduction","Wide Angle Lens"] },
-        { id: 6, name: "Wireless Gaming Mouse", price: 129.99, category: "gaming", description: "...", stock: 55, image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500", colors: [{name:"Black",code:"#000000",price:129.99},{name:"White",code:"#FFFFFF",price:129.99}], rating:4.3, reviews:92, features:["25,600 DPI","Wireless","RGB Lighting","Programmable Buttons"] },
-        { id: 7, name: "Ultrawide Monitor 34-inch", price: 899.99, category: "computers", description: "...", stock: 19, image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500", colors: [], rating:4.7, reviews:67, features:["34-inch Curved Display","1440p Resolution","144Hz Refresh Rate","FreeSync Premium"] },
-        { id: 8, name: "Wireless Earbuds Pro", price: 249.99, category: "audio", description: "...", stock: 76, image: "https://images.unsplash.com/photo-1590658165737-15a047b67cf3?w=500", colors: [{name:"White",code:"#FFFFFF",price:249.99},{name:"Black",code:"#000000",price:249.99}], rating:4.5, reviews:134, features:["Active Noise Cancellation","Spatial Audio","6-hour Battery","Wireless Charging"] }
-    ];
-    saveProducts();
-}
-function saveProducts() { localStorage.setItem('techhubpro_products', JSON.stringify(products)); }
-function loadCart() { const s=localStorage.getItem('techhubpro_cart'); if(s) cart=JSON.parse(s); updateCartDisplay(); }
-function saveCart() { localStorage.setItem('techhubpro_cart', JSON.stringify(cart)); }
-function loadUser() { const s=localStorage.getItem('techhubpro_user'); if(s){ currentUser=JSON.parse(s); updateUserMenu(); } }
-function saveUser() { localStorage.setItem('techhubpro_user', JSON.stringify(currentUser)); }
-
-/* =====  UI RENDER  ===== */
-function displayProducts(filterCategory='all') {
-    const grid=document.getElementById('products-grid') || document.createElement('section');
-    grid.innerHTML='';
-    const filtered=filterCategory==='all' ? products : products.filter(p=>p.category===filterCategory);
-    filtered.forEach(p=>{
-        const card=document.createElement('div');
-        card.className='card rounded-2xl overflow-hidden shadow-lg';
-        card.innerHTML=`
-            <div class="relative overflow-hidden bg-gray-800 h-64">
-                ${p.image?`<img src="${p.image}" alt="${p.name}" class="product-image w-full h-full object-cover">`:`<div class="w-full h-full flex items-center justify-center"><i class="fas fa-laptop text-6xl text-blue-500"></i></div>`}
-                <div class="absolute top-4 right-4"><span class="badge ${p.stock>10?'badge-success':p.stock>0?'badge-warning':'badge-error'}">${p.stock>10?'In Stock':p.stock>0?'Low Stock':'Out of Stock'}</span></div>
+<!-- ================= HEADER ================= -->
+<header class="sticky top-0 glass-effect shadow-lg z-40 border-b border-gray-700">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-microchip text-white text-lg"></i>
             </div>
-            <div class="p-6">
-                <h3 class="text-xl font-semibold mb-2">${p.name}</h3>
-                <div class="flex items-center mb-3">${generateStarRating(p.rating||0)}<span class="ml-2 text-gray-400 text-sm">(${p.reviews||0})</span></div>
-                <div class="text-2xl font-bold text-blue-400 mb-3">$${(p.colors?.length?Math.min(...p.colors.map(c=>c.price)):p.price).toFixed(2)}${p.colors?.length?'+':''}</div>
-                <p class="text-gray-400 text-sm mb-4 line-clamp-2">${p.description}</p>
-                <div class="flex gap-3">
-                    <button class="view-product-btn flex-1 glass-effect px-4 py-3 rounded-xl text-blue-400 hover:text-white hover:bg-blue-500 transition-all" data-id="${p.id}"><i class="fas fa-eye mr-2"></i>View Details</button>
-                    <button class="add-to-cart-btn btn-primary px-6 py-3 rounded-xl font-medium transition-all" data-id="${p.id}" ${p.stock<=0?'disabled':''}>${p.stock<=0?'Sold Out':'Add to Cart'}</button>
-                </div>
-            </div>`;
-        grid.appendChild(card);
-    });
-}
-function generateStarRating(r){ const full=Math.floor(r), half=r%1!==0; let s=''; for(let i=0;i<full;i++)s+='<i class="fas fa-star"></i>';if(half)s+='<i class="fas fa-star-half-alt"></i>';const e=5-Math.ceil(r);for(let i=0;i<e;i++)s+='<i class="far fa-star"></i>'; return s; }
+            <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">CYBER<span class="text-white">+</span></span>
+        </div>
 
-/* =====  PRODUCT MODAL  ===== */
-function openProductModal(id){
-    currentProduct=products.find(p=>p.id===id);
-    if(!currentProduct) return;
-    selectedColor=currentProduct.colors?.[0]||null;
-    document.getElementById('modal-product-name').textContent=currentProduct.name;
-    document.getElementById('modal-product-description').textContent=currentProduct.description;
-    document.getElementById('modal-product-rating').innerHTML=generateStarRating(currentProduct.rating||0);
-    document.getElementById('modal-product-reviews').textContent=currentProduct.reviews||0;
-    const img=document.getElementById('modal-product-image');
-    img.innerHTML=currentProduct.image?`<img src="${currentProduct.image}" class="max-h-full max-w-full object-contain rounded-xl">`:`<i class="fas fa-laptop text-8xl text-blue-500"></i>`;
-    const colors=document.getElementById('modal-product-colors');
-    if(currentProduct.colors?.length){
-        colors.innerHTML=`<div class="space-y-3"><label class="font-semibold">Choose Color:</label><div class="flex gap-3">${currentProduct.colors.map((c,i)=>`<div class="color-swatch color-option ${i===0?'selected':''}" style="background-color:${c.code}" data-color-index="${i}" title="${c.name} - $${c.price.toFixed(2)}"></div>`).join('')}</div><div class="text-sm text-gray-400" id="selected-color-info">${currentProduct.colors[0].name} - $${currentProduct.colors[0].price.toFixed(2)}</div></div>`;
-    }else colors.innerHTML='';
-    document.getElementById('product-quantity').value=1;
-    updateModalPrice();
-    document.getElementById('product-modal').classList.add('active');
-}
-function updateModalPrice(){ const price=selectedColor?selectedColor.price:currentProduct.price; document.getElementById('modal-product-price').textContent=`$${price.toFixed(2)}`; }
+        <div class="hidden md:flex flex-1 mx-10 relative">
+            <input id="search-input" type="text" placeholder="Search for electronics..." class="w-full px-6 py-3 pl-12 rounded-full glass-effect border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400">
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <div id="search-suggestions" class="search-suggestions hidden"></div>
+        </div>
 
-/* =====  CART  ===== */
-function addToCart(id,q=1,color=null){
-    const p=products.find(pr=>pr.id===id);
-    if(!p||p.stock<q){ showNotification('Insufficient stock','error'); return; }
-    const key=`${id}-${color?color.name:'default'}`;
-    const existing=cart.find(it=>it.cartKey===key);
-    if(existing){ if(existing.quantity+q>p.stock){showNotification('Not enough stock','error'); return;} existing.quantity+=q; }
-    else cart.push({cartKey:key,productId:id,name:p.name,price:color?color.price:p.price,quantity:q,color:color?color.name:null,image:p.image});
-    updateCartDisplay(); saveCart(); showNotification(`${p.name} added to cart!`,'success');
-}
-function removeFromCart(key){ cart=cart.filter(it=>it.cartKey!==key); updateCartDisplay(); saveCart(); showNotification('Item removed','success');}
-function updateCartQuantity(key,change){
-    const item=cart.find(it=>it.cartKey===key);
-    const prod=products.find(p=>p.id===item.productId);
-    if(!item||!prod) return;
-    const newQ=item.quantity+change;
-    if(newQ<=0){ removeFromCart(key); return; }
-    if(newQ>prod.stock){showNotification(`Only ${prod.stock} left`,'error'); return;}
-    item.quantity=newQ; updateCartDisplay(); saveCart();
-}
-function updateCartDisplay(){
-    const count=document.getElementById('cart-count'); const items=document.getElementById('cart-items');
-    const subtotal=cart.reduce((s,it)=>s+it.price*it.quantity,0);
-    const shipping=subtotal>=200?0:12.99; const total=subtotal+shipping;
-    if(count) count.textContent=cart.reduce((s,it)=>s+it.quantity,0);
-    if(items){
-        if(!cart.length){ items.innerHTML=`<div class="text-center text-gray-400 py-20"><i class="fas fa-shopping-cart text-6xl mb-4 opacity-50"></i><p class="text-lg">Your cart is empty</p></div>`; }
-        else items.innerHTML=cart.map(it=>`
-            <div class="flex items-center py-4 border-b border-gray-700">
-                <div class="w-16 h-16 bg-gray-800 rounded-xl flex items-center justify-center mr-4">
-                    ${it.image?`<img src="${it.image}" class="max-h-full max-w-full object-contain rounded-lg">`:`<i class="fas fa-laptop text-blue-500"></i>`}
-                </div>
-                <div class="flex-grow">
-                    <h4 class="font-semibold text-white">${it.name}</h4>${it.color?`<p class="text-sm text-gray-400">${it.color}</p>`:''}
-                    <div class="flex items-center mt-2">
-                        <button class="cart-decrease px-2 text-gray-400 hover:text-white" data-cart-key="${it.cartKey}"><i class="fas fa-minus"></i></button>
-                        <span class="px-3 font-medium">${it.quantity}</span>
-                        <button class="cart-increase px-2 text-gray-400 hover:text-white" data-cart-key="${it.cartKey}"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-                <span class="text-blue-400 font-semibold">$${(it.price*it.quantity).toFixed(2)}</span>
-                <button class="cart-remove ml-4 text-gray-400 hover:text-red-500" data-cart-key="${it.cartKey}"><i class="fas fa-trash-alt"></i></button>
-            </div>`).join('');
-    }
-}
+        <div class="flex items-center space-x-6">
+            <button id="cart-button" class="relative p-3 glass-effect rounded-full hover:bg-opacity-20">
+                <i class="fas fa-shopping-cart text-xl text-white"></i>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-6 h-6 flex items-center justify-center font-bold">0</span>
+            </button>
 
-/* =====  USER MENU  ===== */
-function updateUserMenu(){
-    const guest=document.getElementById('guest-menu');
-    const user=document.getElementById('user-menu');
-    const admin=document.getElementById('admin-menu');
-    guest?.classList.toggle('hidden',!!currentUser||isAdmin);
-    user?.classList.toggle('hidden',!currentUser||isAdmin);
-    admin?.classList.toggle('hidden',!isAdmin);
-    if(user) document.getElementById('user-name').textContent=currentUser?.name||'';
-}
-
-/* =====  ADMIN PANEL  ===== */
-function openAdminPanel(){
-    document.getElementById('admin-panel')?.classList.add('active');
-    displayAdminProducts(); updateAdminStats(); initializeSalesChart();
-}
-function updateAdminStats(){
-    const orders=JSON.parse(localStorage.getItem('techhubpro_orders')||'[]');
-    const totalProducts=products.length;
-    const totalOrders=orders.length;
-    const totalRevenue=orders.reduce((s,o)=>s+o.total,0);
-    const lowStock=products.filter(p=>p.stock<10).length;
-    document.getElementById('admin-total-products')&&(document.getElementById('admin-total-products').textContent=totalProducts);
-    document.getElementById('admin-total-orders')&&(document.getElementById('admin-total-orders').textContent=totalOrders);
-    document.getElementById('admin-total-revenue')&&(document.getElementById('admin-total-revenue').textContent=`$${totalRevenue.toFixed(2)}`);
-    document.getElementById('admin-low-stock')&&(document.getElementById('admin-low-stock').textContent=lowStock);
-}
-function displayAdminProducts(){
-    const list=document.getElementById('admin-products-list')||document.createElement('div');
-    list.innerHTML=products.map(p=>`
-        <div class="flex items-center justify-between p-4 glass-effect rounded-xl">
-            <div class="flex items-center">
-                <div class="w-16 h-16 bg-gray-800 rounded-xl flex items-center justify-center mr-4">
-                    ${p.image?`<img src="${p.image}" class="max-h-full max-w-full object-contain rounded-lg">`:`<i class="fas fa-laptop text-blue-500"></i>`}
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white">${p.name}</h4>
-                    <p class="text-sm text-gray-400">$${p.price.toFixed(2)} • Stock: ${p.stock} • Category: ${p.category}</p>
-                </div>
+            <div id="guest-menu" class="flex items-center space-x-4">
+                <button id="login-btn" class="text-gray-300 hover:text-white">Login</button>
+                <button id="register-btn" class="btn-primary px-4 py-2 rounded-full">Sign Up</button>
             </div>
-            <div class="flex gap-2">
-                <button class="edit-product-btn text-blue-400 hover:text-blue-300 p-2 glass-effect rounded-lg" data-id="${p.id}"><i class="fas fa-edit"></i></button>
-                <button class="delete-product-btn text-red-400 hover:text-red-300 p-2 glass-effect rounded-lg" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+
+            <div id="user-menu" class="hidden flex items-center space-x-4">
+                <span id="user-name" class="text-white font-medium"></span>
+                <button id="user-logout-btn" class="text-gray-300 hover:text-white"><i class="fas fa-sign-out-alt"></i></button>
             </div>
-        </div>`).join('');
-}
-function initializeSalesChart(){ /* existing chart code omitted for brevity */ }
 
-/* =====  FORM UTILS  ===== */
-function addColorField(){
-    const section=document.getElementById('colors-section');
-    const div=document.createElement('div'); div.className='flex gap-2 mb-2';
-    div.innerHTML=`
-        <input type="text" placeholder="Color name" class="form-control flex-1" id="color-name-${colorFieldCount}">
-        <input type="color" class="w-12 h-12 rounded" id="color-code-${colorFieldCount}">
-        <input type="number" step="0.01" placeholder="Price" class="form-control w-24" id="color-price-${colorFieldCount}">
-        <button type="button" onclick="removeColorField(this)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded">-</button>`;
-    section.appendChild(div); colorFieldCount++;
-}
-function removeColorField(btn){ btn.parentElement.remove(); }
+            <div id="admin-menu" class="hidden flex items-center space-x-4">
+                <button id="admin-panel-btn" class="text-blue-400 hover:text-blue-300"><i class="fas fa-cog mr-2"></i>Admin Panel</button>
+                <button id="admin-logout-btn" class="text-gray-300 hover:text-white"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </div>
+</header>
 
-/* =====  EDIT / SAVE PRODUCT  ===== */
-document.addEventListener('click', e=>{
-    // --- open edit form ---
-    const editBtn=e.target.closest('.edit-product-btn');
-    if(editBtn){
-        editingProductId=parseInt(editBtn.dataset.id);
-        const p=products.find(pr=>pr.id===editingProductId);
-        document.getElementById('product-name').value=p.name;
-        document.getElementById('product-price').value=p.price;
-        document.getElementById('product-category').value=p.category;
-        document.getElementById('product-stock').value=p.stock;
-        document.getElementById('product-description').value=p.description;
-        document.getElementById('product-image-url').value=p.image||'';
-        document.getElementById('image-preview').innerHTML=p.image?`<img src="${p.image}" class="max-w-32 max-h-32 object-cover rounded-xl">`:'';
-        // colours
-        const section=document.getElementById('colors-section'); section.innerHTML=''; colorFieldCount=0;
-        if(p.colors?.length){
-            p.colors.forEach(c=>{
-                addColorField();
-                document.getElementById(`color-name-${colorFieldCount-1}`).value=c.name;
-                document.getElementById(`color-code-${colorFieldCount-1}`).value=c.code;
-                document.getElementById(`color-price-${colorFieldCount-1}`).value=c.price;
-            });
-        }else addColorField();
-        document.getElementById('add-product-form').style.display='block';
-    }
-    // --- delete product ---
-    const delBtn=e.target.closest('.delete-product-btn');
-    if(delBtn){
-        const id=parseInt(delBtn.dataset.id);
-        if(confirm('Delete this product?')){
-            products=products.filter(p=>p.id!==id);
-            saveProducts(); displayProducts(); displayAdminProducts(); updateAdminStats();
-            showNotification('Product deleted','success');
-        }
-    }
-});
-const saveBtn=document.getElementById('save-product-btn');
-saveBtn.replaceWith(saveBtn.cloneNode(true)); // detach old listeners
-document.getElementById('save-product-btn').addEventListener('click', ()=>{
-    const name=document.getElementById('product-name').value.trim();
-    const price=parseFloat(document.getElementById('product-price').value);
-    const category=document.getElementById('product-category').value;
-    const stock=parseInt(document.getElementById('product-stock').value);
-    const description=document.getElementById('product-description').value.trim();
-    const image=document.getElementById('product-image-url').value.trim();
-    if(!name||!price||!category||isNaN(stock)||!description){showNotification('Fill required fields','error'); return;}
+<!-- ================= HERO ================= -->
+<section class="hero-gradient py-20 text-white">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Welcome to <span class="text-yellow-300">CYBER+</span></h1>
+        <p class="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto">Discover the latest in technology with our premium collection of electronics, gadgets, and accessories.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onclick="scrollToSection('products')" class="btn-primary px-8 py-4 rounded-full font-semibold text-lg"><i class="fas fa-shopping-bag mr-2"></i>Shop Now</button>
+            <button onclick="scrollToSection('features')" class="glass-effect px-8 py-4 rounded-full font-semibold text-lg border border-white border-opacity-30">Learn More</button>
+        </div>
+    </div>
+</section>
 
-    const colors=[];
-    for(let i=0;i<colorFieldCount;i++){
-        const n=document.getElementById(`color-name-${i}`); const c=document.getElementById(`color-code-${i}`); const p=document.getElementById(`color-price-${i}`);
-        if(n?.value && c && p?.value) colors.push({name:n.value, code:c.value, price:parseFloat(p.value)});
-    }
-    const data={name,price,category,description,stock,image,colors,rating:0,reviews:0,features:[]};
-    if(editingProductId){
-        const idx=products.findIndex(p=>p.id===editingProductId);
-        products[idx]={...products[idx],...data};
-        showNotification('Product updated','success');
-    }else{
-        products.push({id:Date.now(),...data});
-        showNotification('Product added','success');
-    }
-    saveProducts(); displayProducts(); displayAdminProducts(); updateAdminStats();
-    editingProductId=null;
-    document.getElementById('add-product-form').style.display='none';
-});
+<!-- ================= PRODUCTS ================= -->
+<section id="products" class="py-20 bg-custom-darker">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold mb-4 text-center">Our Premium Products</h2>
+        <p class="text-xl text-gray-400 text-center mb-12">Discover our carefully curated selection</p>
 
-/* =====  SEARCH  ===== */
-function initializeSearchSuggestions(){/* existing search code */}
+        <div class="flex flex-wrap gap-4 justify-center mb-12">
+            <button class="filter-tag active" data-category="all">All Products</button>
+            <button class="filter-tag" data-category="computers">Computers</button>
+            <button class="filter-tag" data-category="smartphones">Smartphones</button>
+            <button class="filter-tag" data-category="accessories">Accessories</button>
+            <button class="filter-tag" data-category="gaming">Gaming</button>
+            <button class="filter-tag" data-category="audio">Audio</button>
+        </div>
 
-/* =====  EVENT BINDING  ===== */
-function setupEventListeners(){
-    /* existing bindings (cart, modals, auth, etc.) – unchanged */
-    document.addEventListener('keydown', e=>{ if(e.ctrlKey&&e.shiftKey&&e.key==='A'){ e.preventDefault(); if(!isAdmin) document.getElementById('admin-login-modal')?.classList.add('active'); } });
-    // close modals on outside click
-    document.addEventListener('click', e=>{ if(e.target.classList.contains('modal')) e.target.classList.remove('active'); });
-}
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+    </div>
+</section>
 
-/* =====  NOTIFICATION  ===== */
-function showNotification(msg,type='success'){
-    const n=document.createElement('div'); n.className=`notification ${type}`; n.innerHTML=`<i class="fas fa-${type==='success'?'check-circle':'exclamation-circle'} mr-2"></i>${msg}`;
-    document.body.appendChild(n); setTimeout(()=>n.classList.add('show'),100);
-    setTimeout(()=>{n.classList.remove('show'); setTimeout(()=>n.remove(),300)},3000);
-}
-</script>
-</body>
-</html>
+<!-- ================= ADMIN PANEL ================= -->
+<div class="admin-panel" id="admin-panel">
+    <div class="container mx-auto px-4 py-8
