@@ -1200,6 +1200,615 @@
         // Enhanced category system with URL parameter support
         let currentCategory = 'all';
         let allProducts = [];
+        let isAdminLoggedIn = false;
+
+        // Admin authentication system
+        const ADMIN_CREDENTIALS = {
+            username: 'miled',
+            password: 'Firmware@0100'
+        };
+
+        // Check admin login status on page load
+        function checkAdminStatus() {
+            const adminSession = localStorage.getItem('admin_session');
+            if (adminSession) {
+                try {
+                    const session = JSON.parse(adminSession);
+                    const now = new Date().getTime();
+                    if (session.expires > now) {
+                        isAdminLoggedIn = true;
+                        showAdminControls();
+                        console.log('Admin session active');
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Invalid admin session:', e);
+                }
+            }
+            isAdminLoggedIn = false;
+            hideAdminControls();
+        }
+
+        // Admin login function
+        function showAdminLogin() {
+            const loginModal = createAdminLoginModal();
+            document.body.appendChild(loginModal);
+        }
+
+        // Create admin login modal
+        function createAdminLoginModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+            modal.id = 'admin-login-modal';
+            
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-gray-900">Admin Login</h3>
+                            <button onclick="closeAdminLogin()" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <form id="admin-login-form" class="space-y-4">
+                            <div>
+                                <label for="admin-username" class="block text-sm font-medium text-gray-700">Username</label>
+                                <input type="text" id="admin-username" required class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                            </div>
+                            
+                            <div>
+                                <label for="admin-password" class="block text-sm font-medium text-gray-700">Password</label>
+                                <input type="password" id="admin-password" required class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                            </div>
+                            
+                            <div id="login-error" class="hidden text-red-600 text-sm"></div>
+                            
+                            <div class="flex items-center justify-end space-x-3 pt-4">
+                                <button type="button" onclick="closeAdminLogin()" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-700">
+                                    Login
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for form submission
+            modal.addEventListener('submit', handleAdminLogin);
+            
+            return modal;
+        }
+
+        // Handle admin login
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('login-error');
+            
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                // Create admin session (expires in 2 hours)
+                const session = {
+                    username: username,
+                    loginTime: new Date().getTime(),
+                    expires: new Date().getTime() + (2 * 60 * 60 * 1000) // 2 hours
+                };
+                
+                localStorage.setItem('admin_session', JSON.stringify(session));
+                isAdminLoggedIn = true;
+                
+                closeAdminLogin();
+                showAdminControls();
+                showNotification('Admin login successful! Click on products to edit them directly.', 'success', 5000);
+            } else {
+                errorDiv.textContent = 'Invalid username or password';
+                errorDiv.classList.remove('hidden');
+                
+                // Clear error after 3 seconds
+                setTimeout(() => {
+                    errorDiv.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        // Close admin login modal
+        function closeAdminLogin() {
+            const modal = document.getElementById('admin-login-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Admin logout
+        function adminLogout() {
+            localStorage.removeItem('admin_session');
+            isAdminLoggedIn = false;
+            hideAdminControls();
+            showNotification('Admin logged out successfully', 'info');
+        }
+
+        // Show admin controls
+        function showAdminControls() {
+            // Add admin indicator to header
+            const headerDiv = document.querySelector('header .flex.items-center.justify-between .ml-4');
+            if (headerDiv && !document.getElementById('admin-indicator')) {
+                const adminIndicator = document.createElement('div');
+                adminIndicator.id = 'admin-indicator';
+                adminIndicator.className = 'flex items-center space-x-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm';
+                adminIndicator.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Admin Mode</span>
+                    <button onclick="adminLogout()" class="ml-2 text-green-600 hover:text-green-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                    </button>
+                `;
+                headerDiv.insertBefore(adminIndicator, headerDiv.firstChild);
+            }
+
+            // Add admin floating action button
+            if (!document.getElementById('admin-fab')) {
+                const fab = document.createElement('div');
+                fab.id = 'admin-fab';
+                fab.className = 'fixed bottom-6 right-6 z-40';
+                fab.innerHTML = `
+                    <div class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors cursor-pointer" title="Admin Dashboard">
+                        <a href="admin_dashboard.html" class="flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </a>
+                    </div>
+                `;
+                document.body.appendChild(fab);
+            }
+
+            // Add edit hints to products
+            addEditHintsToProducts();
+        }
+
+        // Hide admin controls
+        function hideAdminControls() {
+            const adminIndicator = document.getElementById('admin-indicator');
+            if (adminIndicator) {
+                adminIndicator.remove();
+            }
+
+            const adminFab = document.getElementById('admin-fab');
+            if (adminFab) {
+                adminFab.remove();
+            }
+
+            // Remove edit hints from products
+            removeEditHintsFromProducts();
+        }
+
+        // Add edit hints to products
+        function addEditHintsToProducts() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                if (!card.querySelector('.admin-edit-overlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'admin-edit-overlay absolute inset-0 border-2 border-dashed border-blue-400 bg-blue-50 bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer';
+                    overlay.innerHTML = `
+                        <div class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs">
+                            Click to Edit
+                        </div>
+                    `;
+                    
+                    card.style.position = 'relative';
+                    card.appendChild(overlay);
+                    
+                    // Add click handler for inline editing
+                    overlay.addEventListener('click', () => openInlineEditor(card));
+                }
+            });
+        }
+
+        // Remove edit hints from products
+        function removeEditHintsFromProducts() {
+            const overlays = document.querySelectorAll('.admin-edit-overlay');
+            overlays.forEach(overlay => overlay.remove());
+        }
+
+        // Open inline editor for a product
+        function openInlineEditor(productCard) {
+            if (!isAdminLoggedIn) return;
+
+            // Extract product data from card
+            const productData = extractProductDataFromCard(productCard);
+            
+            // Create inline editor modal
+            const editorModal = createInlineEditorModal(productData, productCard);
+            document.body.appendChild(editorModal);
+        }
+
+        // Extract product data from card
+        function extractProductDataFromCard(card) {
+            const img = card.querySelector('img');
+            const nameElement = card.querySelector('h3');
+            const descElement = card.querySelector('p.text-xs');
+            const priceElement = card.querySelector('.text-lg.font-bold');
+            
+            return {
+                image: img ? img.src : '',
+                name: nameElement ? nameElement.textContent : '',
+                description: descElement ? descElement.textContent : '',
+                price: priceElement ? priceElement.textContent.replace('$', '') : '',
+                category: card.dataset.category || 'computers'
+            };
+        }
+
+        // Create inline editor modal
+        function createInlineEditorModal(productData, productCard) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+            modal.id = 'inline-editor-modal';
+            
+            modal.innerHTML = `
+                <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-semibold text-gray-900">Edit Product</h3>
+                            <button onclick="closeInlineEditor()" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Left Column - Image -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                                        <img id="edit-product-image" src="${productData.image}" alt="${productData.name}" class="mx-auto max-w-full h-64 object-contain mb-4 rounded" />
+                                        <div class="space-y-2">
+                                            <button type="button" onclick="document.getElementById('image-upload-input').click()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                                                Change Image
+                                            </button>
+                                            <input type="file" id="image-upload-input" accept="image/*" class="hidden" />
+                                            <p class="text-xs text-gray-500">Click to upload a new image (JPG, PNG, GIF up to 10MB)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column - Product Details -->
+                            <div class="space-y-6">
+                                <div>
+                                    <label for="edit-product-name-inline" class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                                    <input type="text" id="edit-product-name-inline" value="${productData.name}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
+                                </div>
+                                
+                                <div>
+                                    <label for="edit-product-description-inline" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <textarea id="edit-product-description-inline" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">${productData.description}</textarea>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="edit-product-price-inline" class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+                                        <input type="number" id="edit-product-price-inline" step="0.01" value="${productData.price}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="edit-product-category-inline" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                        <select id="edit-product-category-inline" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="computers" ${productData.category === 'computers' ? 'selected' : ''}>Computers</option>
+                                            <option value="mobiles" ${productData.category === 'mobiles' ? 'selected' : ''}>Mobile Phones</option>
+                                            <option value="accessories" ${productData.category === 'accessories' ? 'selected' : ''}>Accessories</option>
+                                            <option value="gaming" ${productData.category === 'gaming' ? 'selected' : ''}>Gaming</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview Section -->
+                                <div class="border-t pt-6">
+                                    <h4 class="text-lg font-medium text-gray-900 mb-4">Live Preview</h4>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <div class="card p-4 hover-lift group" style="max-width: 300px;">
+                                            <div class="relative mb-4 overflow-hidden rounded-lg">
+                                                <img id="preview-image" src="${productData.image}" alt="${productData.name}" class="w-full h-48 object-cover" />
+                                            </div>
+                                            <h3 id="preview-name" class="font-semibold text-text-primary mb-2">${productData.name}</h3>
+                                            <p id="preview-description" class="text-xs text-text-secondary mb-2">${productData.description}</p>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <span id="preview-price" class="text-lg font-bold text-text-primary">$${productData.price}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-end space-x-3 mt-8 pt-6 border-t">
+                            <button type="button" onclick="closeInlineEditor()" class="bg-white py-2 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button type="button" id="save-inline-changes" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Setup event listeners
+            setupInlineEditorEvents(modal, productCard);
+            
+            return modal;
+        }
+
+        // Setup inline editor events
+        function setupInlineEditorEvents(modal, productCard) {
+            // Image upload handler
+            const imageInput = modal.querySelector('#image-upload-input');
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                        showNotification('Image file is too large. Please choose a file under 10MB.', 'error');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const editImage = modal.querySelector('#edit-product-image');
+                        const previewImage = modal.querySelector('#preview-image');
+                        
+                        editImage.src = e.target.result;
+                        previewImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    showNotification('Image uploaded successfully!', 'success');
+                }
+            });
+
+            // Live preview updates
+            const nameInput = modal.querySelector('#edit-product-name-inline');
+            const descInput = modal.querySelector('#edit-product-description-inline');
+            const priceInput = modal.querySelector('#edit-product-price-inline');
+
+            nameInput.addEventListener('input', function() {
+                modal.querySelector('#preview-name').textContent = this.value;
+            });
+
+            descInput.addEventListener('input', function() {
+                modal.querySelector('#preview-description').textContent = this.value;
+            });
+
+            priceInput.addEventListener('input', function() {
+                const price = parseFloat(this.value) || 0;
+                modal.querySelector('#preview-price').textContent = `$${price.toFixed(2)}`;
+            });
+
+            // Save changes handler
+            const saveButton = modal.querySelector('#save-inline-changes');
+            saveButton.addEventListener('click', function() {
+                saveInlineChanges(modal, productCard);
+            });
+        }
+
+        // Save inline changes
+        function saveInlineChanges(modal, productCard) {
+            // Get updated values
+            const updatedData = {
+                image: modal.querySelector('#edit-product-image').src,
+                name: modal.querySelector('#edit-product-name-inline').value.trim(),
+                description: modal.querySelector('#edit-product-description-inline').value.trim(),
+                price: modal.querySelector('#edit-product-price-inline').value.trim(),
+                category: modal.querySelector('#edit-product-category-inline').value
+            };
+
+            // Validate required fields
+            if (!updatedData.name || !updatedData.price) {
+                showNotification('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            // Update the product card immediately
+            updateProductCard(productCard, updatedData);
+
+            // Save to localStorage for persistence
+            saveProductToStorage(updatedData);
+
+            // Close modal
+            closeInlineEditor();
+
+            // Show success message
+            showNotification('Product updated successfully!', 'success');
+        }
+
+        // Update product card with new data
+        function updateProductCard(card, data) {
+            const img = card.querySelector('img');
+            const nameElement = card.querySelector('h3');
+            const descElement = card.querySelector('p.text-xs');
+            const priceElement = card.querySelector('.text-lg.font-bold');
+
+            if (img) img.src = data.image;
+            if (nameElement) nameElement.textContent = data.name;
+            if (descElement) descElement.textContent = data.description;
+            if (priceElement) priceElement.textContent = `$${parseFloat(data.price).toFixed(2)}`;
+
+            // Update category data attribute
+            card.dataset.category = data.category;
+
+            // Add visual feedback
+            card.style.transform = 'scale(1.02)';
+            card.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
+            setTimeout(() => {
+                card.style.transform = '';
+                card.style.boxShadow = '';
+            }, 1000);
+        }
+
+        // Save product to localStorage
+        function saveProductToStorage(productData) {
+            try {
+                let savedProducts = JSON.parse(localStorage.getItem('edited_products') || '[]');
+                
+                // Find existing product or add new one
+                const existingIndex = savedProducts.findIndex(p => p.name === productData.name);
+                if (existingIndex >= 0) {
+                    savedProducts[existingIndex] = { ...savedProducts[existingIndex], ...productData, lastModified: new Date().toISOString() };
+                } else {
+                    savedProducts.push({ ...productData, id: Date.now().toString(), lastModified: new Date().toISOString() });
+                }
+                
+                localStorage.setItem('edited_products', JSON.stringify(savedProducts));
+                
+                // Also sync with admin dashboard data if it exists
+                const adminData = localStorage.getItem('admin_product_data');
+                if (adminData) {
+                    try {
+                        const adminProducts = JSON.parse(adminData);
+                        // Update admin data to keep in sync
+                        localStorage.setItem('admin_product_data', JSON.stringify(adminProducts));
+                    } catch (e) {
+                        console.warn('Could not sync with admin data:', e);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Failed to save product:', error);
+                showNotification('Failed to save changes locally', 'warning');
+            }
+        }
+
+        // Load saved products on page load
+        function loadSavedProducts() {
+            try {
+                const savedProducts = JSON.parse(localStorage.getItem('edited_products') || '[]');
+                if (savedProducts.length > 0) {
+                    console.log(`Loading ${savedProducts.length} saved product edits`);
+                    // Apply saved changes to matching products
+                    savedProducts.forEach(savedProduct => {
+                        const cards = document.querySelectorAll('.product-card');
+                        cards.forEach(card => {
+                            const nameElement = card.querySelector('h3');
+                            if (nameElement && nameElement.textContent.trim() === savedProduct.name) {
+                                updateProductCard(card, savedProduct);
+                            }
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load saved products:', error);
+            }
+        }
+
+        // Close inline editor
+        function closeInlineEditor() {
+            const modal = document.getElementById('inline-editor-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info', duration = 4000) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-sm ${
+                type === 'success' ? 'bg-green-500 text-white' : 
+                type === 'error' ? 'bg-red-500 text-white' : 
+                type === 'warning' ? 'bg-yellow-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ${type === 'success' ? 
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' :
+                          type === 'error' ? 
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' :
+                          type === 'warning' ?
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>' :
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                        }
+                    </svg>
+                    <span class="text-sm">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 hover:opacity-75">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // Add admin login button to account menu
+        function addAdminLoginToHeader() {
+            const accountButton = document.querySelector('button[title="Account"] svg, button:has(svg path[d*="M16 7a4 4 0 11-8 0"])').closest('button');
+            if (accountButton && !document.getElementById('admin-login-btn')) {
+                // Create a dropdown menu container
+                const accountContainer = document.createElement('div');
+                accountContainer.className = 'relative';
+                
+                // Replace the button with the container
+                accountButton.parentNode.insertBefore(accountContainer, accountButton);
+                accountContainer.appendChild(accountButton);
+                
+                // Add dropdown menu
+                const dropdown = document.createElement('div');
+                dropdown.id = 'account-dropdown';
+                dropdown.className = 'absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 hidden z-50';
+                dropdown.innerHTML = `
+                    <div class="py-1">
+                        <button onclick="showAdminLogin()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                            </svg>
+                            Admin Login
+                        </button>
+                    </div>
+                `;
+                
+                accountContainer.appendChild(dropdown);
+                
+                // Toggle dropdown on button click
+                accountButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    dropdown.classList.add('hidden');
+                });
+            }
+        }
 
         // Get URL parameters
         function getUrlParams() {
@@ -1630,8 +2239,23 @@
             });
         });
 
+        // Make functions globally available
+        window.showAdminLogin = showAdminLogin;
+        window.closeAdminLogin = closeAdminLogin;
+        window.adminLogout = adminLogout;
+        window.closeInlineEditor = closeInlineEditor;
+
         // Initialize page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializePage);
-    </script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            checkAdminStatus();
+            addAdminLoginToHeader();
+            loadSavedProducts();
+            
+            // Add session check every minute
+            setInterval(checkAdminStatus, 60000);
+        });
+</script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
 </body>
 </html>
